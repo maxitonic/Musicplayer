@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MAXITO — Futuristic (B/W) v2</title>
+<style>
+:root{
+  --bg:#000; --fg:#fff; --muted:rgba(255,255,255,0.14);
+  --glass: rgba(255,255,255,0.03);
+}
+*{box-sizing:border-box; user-select:none; -webkit-user-select:none; -moz-user-select:none}
+/* allow selecting only inside form controls (exclude buttons to avoid caret on nav buttons) */
+input, textarea, select, .input { user-select:text; -webkit-user-select:text; -moz-user-select:text }
+
+/* nav button subtle hover */
+.nav button{ transition: background 200ms ease, color 200ms ease, transform 120ms ease, box-shadow 200ms ease; }
+.nav button:hover{ background: linear-gradient(135deg, rgba(80,140,255,0.12), rgba(60,120,240,0.10)); color: #DFF0FF; border-color: rgba(80,140,255,0.22); box-shadow: 0 6px 18px rgba(60,120,240,0.12); transform: translateY(-2px); }
+.nav button:active{ transform: translateY(0); }
+
+/* small tasteful hover for primary buttons too */
+.btn:hover{ background: linear-gradient(135deg, rgba(80,140,255,0.08), rgba(60,120,240,0.06)); color: #EAF6FF; }
+.play-btn:hover{ box-shadow: 0 8px 20px rgba(60,120,240,0.12); transform: scale(1.02); }
+html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:Inter, system-ui, Arial}
+.app-shell{max-width:1100px;margin:18px auto;padding:18px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:52px;height:52px;border-radius:10px;background:#0f1720;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;position:relative;overflow:visible;box-shadow:0 6px 20px rgba(0,0,0,0.6), 0 2px 6px rgba(80,140,255,0.04);}
+/* inner transparent circular cut */
+.logo::before{content:'';position:absolute;width:32px;height:32px;border-radius:50%;background:var(--bg);top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:inset 0 0 12px rgba(80,140,255,0.03);}
+/* neon glow ring */
+.logo::after{content:'';position:absolute;inset:0;border-radius:10px;box-shadow:0 0 18px rgba(80,140,255,0.03);pointer-events:none}
+
+/* the neon M */
+.logo .m{position:relative;z-index:2;font-size:20px;line-height:1;color:#cfe9ff;letter-spacing:1px;filter:drop-shadow(0 6px 14px rgba(60,120,240,0.12));
+  text-shadow:0 0 6px rgba(80,140,255,0.6),0 0 12px rgba(80,140,255,0.35);animation:neonGlow 2s ease-in-out infinite, neonBlink 3s steps(2,end) infinite}
+
+@keyframes neonGlow{0%{text-shadow:0 0 4px rgba(80,140,255,0.45),0 0 10px rgba(80,140,255,0.25);color:#d7f0ff}50%{text-shadow:0 0 14px rgba(100,170,255,0.95),0 0 30px rgba(80,140,255,0.6);color:#ffffff}100%{text-shadow:0 0 4px rgba(80,140,255,0.45),0 0 10px rgba(80,140,255,0.25);color:#cfe9ff}}
+@keyframes neonBlink{0%{opacity:1}45%{opacity:1}50%{opacity:0.2}55%{opacity:1}100%{opacity:1}}
+.title{font-weight:800}
+.subtitle{font-size:.85rem;color:var(--muted)}
+
+/* navigation */
+.nav{display:flex;gap:10px}
+.nav button{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:var(--fg);cursor:pointer}
+.nav button.active{background:#fff;color:#000;}
+
+/* layout */
+.views{display:grid;grid-template-columns:1fr;gap:18px}
+.view{display:none;align-items:center;justify-content:center;min-height:70vh}
+.view.active{display:flex}
+
+/* my list style centered */
+.panel{width:760px;max-width:94vw;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 10px 30px rgba(0,0,0,0.6)}
+.panel h2{margin:0 0 12px 0}
+.form-row{display:flex;gap:10px;align-items:center}
+.input{flex:1;padding:10px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--fg)}
+.btn{padding:10px 12px;border-radius:10px;border:none;background:var(--fg);color:var(--bg);cursor:pointer}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--fg)}
+.small{padding:8px 10px}
+
+/* list */
+.list{margin-top:14px;display:flex;flex-direction:column;gap:10px;max-height:56vh;overflow:auto;padding-right:6px}
+.track{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;background:linear-gradient(0deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));cursor:pointer;border:1px solid rgba(255,255,255,0.02)}
+.thumb{width:68px;height:68px;border-radius:8px;background:#111;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.meta{flex:1;min-width:0}
+.name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub{color:var(--muted);font-size:.88rem;margin-top:6px}
+.actions{display:flex;gap:8px}
+
+/* controller centered panel */
+.controller-card{width:760px;max-width:94vw;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));padding:28px;border-radius:14px;border:1px solid rgba(255,255,255,0.04);display:flex;flex-direction:column;align-items:center;gap:18px;box-shadow:0 10px 30px rgba(0,0,0,0.6)}
+.title-large{font-weight:800;font-size:1.1rem}
+.subtitle-muted{color:var(--muted)}
+
+/* CD & ring */
+.cd-wrap{position:relative;width:360px;height:360px;display:flex;align-items:center;justify-content:center}
+.ring{position:absolute;width:320px;height:320px;border-radius:50%;
+  background:conic-gradient(var(--fg) var(--pct,0deg), rgba(255,255,255,0.03) 0deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 10px), black calc(100% - 10px));
+}
+.cd{width:270px;height:270px;border-radius:50%;background:#111;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 8px 20px rgba(255,255,255,0.02)}
+.cd.rotating{animation:spin 4s linear infinite}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.cd-inner{width:86%;height:86%;border-radius:50%;background-size:cover;background-position:center;border:2px solid rgba(255,255,255,0.04)}
+
+/* center controls */
+.center-ctrl{position:absolute;display:flex;flex-direction:column;align-items:center;gap:10px}
+.play-btn{width:96px;height:96px;border-radius:999px;background:var(--fg);color:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;border:none;cursor:pointer}
+.control-row{display:flex;gap:12px;align-items:center;justify-content:center}
+
+/* time & slider */
+.controls-bottom{width:100%;display:flex;align-items:center;gap:12px}
+.time{color:var(--muted);font-size:.92rem;min-width:120px;text-align:center}
+.slider{flex:1;height:6px;background:rgba(255,255,255,0.04);border-radius:6px;overflow:hidden}
+.slider > i{display:block;height:100%;background:var(--fg);width:0%}
+
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);top:18px;background:#111;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);box-shadow:0 8px 30px rgba(0,0,0,0.6);display:none;z-index:999}
+
+/* modal */
+.modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:1000}
+.modal{width:420px;max-width:94vw;background:var(--bg);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06)}
+.modal h4{margin:0 0 10px 0}
+.modal .row{display:flex;justify-content:flex-end;gap:10px;margin-top:12px}
+
+/* responsive */
+@media(max-width:880px){
+  .controller-card, .panel{padding:16px}
+  .cd-wrap{width:280px;height:280px}
+  .cd{width:200px;height:200px}
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <header>
+    <div class="brand">
+      <div class="logo"><span class="m">M</span></div>
+      <div>
+        <div class="title">MAXITO</div>
+        <div class="subtitle">Nefarious steal of tune...</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="nav" role="navigation" aria-label="Main">
+        <button id="btnList" class="active">MY LIST</button>
+        <button id="btnController">CONTROLLER</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="views">
+    <!-- MY LIST view -->
+    <div id="viewList" class="view active" aria-hidden="false">
+      <div class="panel">
+        <h2>MY LIST</h2>
+        <div class="form-row">
+          <input id="nameInput" class="input" placeholder="Song name (optional)" />
+          <button id="saveBtn" class="btn">Save</button>
+        </div>
+        <div style="height:8px"></div>
+        <div class="form-row">
+          <input id="urlInput" class="input" placeholder="YouTube or MP3 URL" />
+          <button id="testBtn" class="btn ghost small">Save & Play</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <input id="search" class="input" placeholder="Search..." />
+        </div>
+
+        <div class="list" id="list"></div>
+
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button id="clearBtn" class="btn ghost small">Clear All</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTROLLER view -->
+    <div id="viewController" class="view">
+      <div class="controller-card">
+        <div style="text-align:center">
+          <div class="title-large" id="ctlTitle">No track selected</div>
+          <div class="subtitle-muted" id="ctlSource">—</div>
+        </div>
+
+        <div class="cd-wrap" id="ringArea" title="Click to seek (controller)">
+          <div class="ring" id="ring" style="--pct:0deg"></div>
+          <div class="cd" id="cd">
+            <div class="cd-inner" id="cdInner"></div>
+          </div>
+
+          <div class="center-ctrl">
+            <button id="playPause" class="play-btn">▶</button>
+            <div class="control-row">
+              <!-- STOP and FRAME removed as requested -->
+            </div>
+          </div>
+        </div>
+
+        <div class="controls-bottom">
+          <div class="time" id="timeLabel">0:00 / 0:00</div>
+          <div class="slider"><i id="progressBar" style="width:0%"></i></div>
+          <div style="width:100px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- toast & modals -->
+<div id="toast" class="toast"></div>
+
+<!-- Clear all modal (existing) -->
+<div id="modalBack" class="modal-back">
+  <div class="modal" role="dialog" aria-modal="true">
+    <h4>Clear all saved songs?</h4>
+    <p class="tiny" style="color:var(--muted)">This will permanently remove all saved tracks from this browser.</p>
+    <div class="row">
+      <button id="cancelClear" class="btn ghost small">Cancel</button>
+      <button id="confirmClear" class="btn small">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete single track modal (new) -->
+<div id="modalDeleteBack" class="modal-back">
+  <div class="modal" role="dialog" aria-modal="true">
+    <h4>Remove saved song?</h4>
+    <p class="tiny" style="color:var(--muted)">This will permanently remove the saved track from this browser.</p>
+    <div class="row">
+      <button id="cancelDelete" class="btn ghost small">Cancel</button>
+      <button id="confirmDelete" class="btn small">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- hidden players -->
+<div id="yt-player" style="display:none"></div>
+<audio id="audio"></audio>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+/* ---------- core utilities ---------- */
+const KEY = 'maxito_v2_bw';
+function isYT(u){ return /youtu(?:\.be|be\.com)/i.test(u); }
+function extractID(url){
+  try{ let u = new URL(url); if(u.hostname.includes('youtu.be')) return u.pathname.slice(1); if(u.searchParams.get('v')) return u.searchParams.get('v'); let p=u.pathname.split('/'),i=p.indexOf('embed'); if(i>=0 && p.length>i+1) return p[i+1]; }
+  catch(e){}
+  const m = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/); return m?m[1]:null;
+}
+function thumb(id){ return id?`https://img.youtube.com/vi/${id}/hqdefault.jpg` : ''; }
+function fmtTime(s){ if(!s||isNaN(s)) return '0:00'; s=Math.floor(s); return Math.floor(s/60)+':'+(s%60<10?'0'+(s%60):s%60); }
+
+/* ---------- storage & render ---------- */
+function load(){ return JSON.parse(localStorage.getItem(KEY)||'[]'); }
+function save(list){ localStorage.setItem(KEY, JSON.stringify(list)); }
+function renderList(filter=''){
+  const cont = document.getElementById('list'); cont.innerHTML='';
+  const items = load().filter(t=> t.name.toLowerCase().includes(filter.toLowerCase()) || t.url.toLowerCase().includes(filter.toLowerCase()));
+  items.forEach((t,i)=>{
+    const row = document.createElement('div'); row.className='track'; row.dataset.idx=i;
+    const th = document.createElement('div'); th.className='thumb';
+    if(t.type==='youtube'){ const img = document.createElement('img'); img.src=thumb(t.id); img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover'; img.style.borderRadius='6px'; th.appendChild(img); }
+    else { th.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M7 6v12l10-6z"/></svg>'; }
+    const meta = document.createElement('div'); meta.className='meta';
+    const name = document.createElement('div'); name.className='name'; name.textContent = t.name||t.url;
+    const sub = document.createElement('div'); sub.className='sub'; sub.textContent = t.type==='youtube'?'YouTube':'MP3';
+    meta.appendChild(name); meta.appendChild(sub);
+    const actions = document.createElement('div'); actions.className='actions';
+    const playBtn = document.createElement('button'); playBtn.className='btn ghost small'; playBtn.textContent='Play'; playBtn.onclick = (e)=>{ e.stopPropagation(); playTrack(i, false, true); };
+    const delBtn = document.createElement('button'); delBtn.className='btn ghost small'; delBtn.textContent='Delete'; delBtn.onclick = (e)=>{ e.stopPropagation(); remove(i); };
+    actions.appendChild(playBtn); actions.appendChild(delBtn);
+    row.appendChild(th); row.appendChild(meta); row.appendChild(actions);
+    row.onclick = ()=> { playTrack(i, true, false); /* click starts playing but stays in list */ showToast(`Playing: ${t.name || 'Track'} — open Controller to control`); };
+    cont.appendChild(row);
+  });
+  if(load().length===0) cont.innerHTML = '<div class="tiny" style="padding:18px;color:var(--muted)">No saved songs. Add a YouTube or MP3 URL above.</div>';
+}
+
+/* ---------- add / remove ---------- */
+function addTrack(name,url){
+  if(!url) return showToast('Paste a valid URL');
+  const t = { name: name||url, url };
+  if(isYT(url)){ t.type='youtube'; t.id = extractID(url); }
+  else t.type='mp3';
+  const list = load(); list.push(t); save(list); renderList(); showToast('Saved');
+}
+
+let pendingDeleteIndex = null;
+function remove(i){
+  // show custom modal similar to "clear all"
+  pendingDeleteIndex = i;
+  document.getElementById('modalDeleteBack').style.display = 'flex';
+}
+function confirmRemove(){ const list=load(); if(pendingDeleteIndex!==null && list[pendingDeleteIndex]){ list.splice(pendingDeleteIndex,1); save(list); renderList(); showToast('Removed'); } pendingDeleteIndex=null; document.getElementById('modalDeleteBack').style.display = 'none'; }
+
+function clearAll(){ localStorage.removeItem(KEY); renderList(); showToast('Cleared all'); }
+
+/* ---------- custom confirm modal (clear all) ---------- */
+const modalBack = document.getElementById('modalBack');
+document.getElementById('clearBtn').onclick = ()=> { modalBack.style.display='flex'; };
+document.getElementById('cancelClear').onclick = ()=> { modalBack.style.display='none'; };
+document.getElementById('confirmClear').onclick = ()=> { modalBack.style.display='none'; clearAll(); };
+
+/* ---------- delete modal handlers (new) ---------- */
+document.getElementById('cancelDelete').onclick = ()=> { pendingDeleteIndex=null; document.getElementById('modalDeleteBack').style.display='none'; };
+document.getElementById('confirmDelete').onclick = ()=> { confirmRemove(); };
+
+/* ---------- toast ---------- */
+let toastTimer=null;
+function showToast(msg, t=2200){ const el=document.getElementById('toast'); el.textContent=msg; el.style.display='block'; clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.style.display='none', t); }
+
+/* ---------- players ---------- */
+let yt=null, audio=document.getElementById('audio'), currentIndex=null, kind=null, updater=null; let userPaused=false;
+function createYT(){ if(yt) return; yt = new YT.Player('yt-player',{height:0,width:0,videoId:'',playerVars:{playsinline:1,autoplay:0},events:{onStateChange:onYT}}); }
+function onYT(e){ if(e.data===YT.PlayerState.ENDED) nextTrack(); updateUI(); }
+
+function playTrack(index, openController=false, immediatePlay=false){
+  const list = load(); if(!list[index]) return;
+  const t=list[index];
+  const prevIndex = currentIndex;
+  const sameTrack = (prevIndex === index);
+  currentIndex=index;
+  // set controller info
+  document.getElementById('ctlTitle').textContent=t.name;
+  document.getElementById('ctlSource').textContent=(t.type==='youtube'?'YouTube':'MP3');
+  document.getElementById('cdInner').style.backgroundImage = t.type==='youtube' && t.id ? `url(${thumb(t.id)})` : 'linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))';
+  if(openController) switchToController();
+  // start playback (user click ensures gesture)
+  if(t.type==='youtube'){
+    createYT(); stopAudio();
+    try{
+      // only reload if new track or explicit immediate play requested
+      if(!sameTrack || immediatePlay){ yt.loadVideoById(t.id); }
+      // ensure playback (only when not user-paused unless immediatePlay requested)
+      if(immediatePlay || !sameTrack || !userPaused || (yt.getPlayerState && yt.getPlayerState()!==YT.PlayerState.PLAYING)) yt.playVideo();
+      kind='youtube';
+    }catch(e){ console.warn(e); }
+  }
+  else {
+    stopYouTube();
+    // only reset src if new track or explicit immediatePlay
+    try{
+      if(!sameTrack || audio.src !== t.url || immediatePlay){ audio.src = t.url; }
+      // play if immediatePlay or starting new track or if not user-paused and currently paused
+      if(immediatePlay || !sameTrack || (!userPaused && audio.paused)) audio.play().catch(()=>{});
+      kind='mp3';
+    }catch(e){ console.warn(e); }
+  }
+  cdStart(); startUpdater();
+}
+
+function stopYouTube(){ try{ if(yt) yt.stopVideo(); }catch(e){} }
+function stopAudio(){ try{ audio.pause(); audio.currentTime=0; }catch(e){} }
+function pauseAll(){ if(kind==='mp3') audio.pause(); else if(yt && yt.pauseVideo) yt.pauseVideo(); }
+function resumeAll(){ if(kind==='mp3') audio.play(); else if(yt && yt.playVideo) yt.playVideo(); }
+function stopAll(){ pauseAll(); stopAudio(); stopYouTube(); kind=null; cdStop(); stopUpdater(); updateRing(0); document.getElementById('ctlTitle').textContent='No track selected'; document.getElementById('ctlSource').textContent='—'; currentIndex=null; userPaused=false; }
+
+function nextTrack(){ const list=load(); if(list.length===0) return; let ni = (currentIndex===null?0:currentIndex+1); if(ni>=list.length) ni=0; playTrack(ni,true); }
+function prevTrack(){ const list=load(); if(list.length===0) return; let pi = (currentIndex===null?list.length-1:currentIndex-1); if(pi<0) pi=list.length-1; playTrack(pi,true); }
+
+/* ---------- CD rotate (keep simple) ---------- */
+const cd = document.getElementById('cd'), ring = document.getElementById('ring'), cdInner=document.getElementById('cdInner');
+let rot=false;
+function cdStart(){ rot=true; cd.classList.add('rotating'); }
+function cdStop(){ rot=false; cd.classList.remove('rotating'); }
+
+/* ---------- progress ring & seek ---------- */
+function setRing(pct){ const deg = (pct||0)*360; ring.style.setProperty('--pct', deg+'deg'); document.getElementById('progressBar').style.width = (pct*100||0)+'%'; }
+function nowTime(){ if(kind==='mp3') return audio.currentTime||0; if(yt && yt.getCurrentTime) return yt.getCurrentTime()||0; return 0; }
+function nowDur(){ if(kind==='mp3') return audio.duration||0; if(yt && yt.getDuration) return yt.getDuration()||0; return 0; }
+function updateRing(){ const d=nowDur(), c=nowTime(); const pct = d?Math.max(0,Math.min(1,c/d)):0; setRing(pct); document.getElementById('timeLabel').textContent = fmtTime(c)+' / '+fmtTime(d); }
+document.getElementById('ringArea').addEventListener('click', e=>{
+  if(currentIndex===null) return;
+  const rect = e.currentTarget.getBoundingClientRect(); const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+  const ang = Math.atan2(e.clientY-cy, e.clientX-cx)*180/Math.PI + 90; const pct = ((ang+360)%360)/360;
+  const d = nowDur(); if(d && pct>=0){ if(kind==='mp3'){ audio.currentTime = d * pct; } else if(yt && yt.seekTo){ yt.seekTo(d*pct, true); } }
+});
+
+/* ---------- updater ---------- */
+function startUpdater(){ stopUpdater(); updater = setInterval(()=>{ updateRing(); refreshUI(); }, 300); }
+function stopUpdater(){ clearInterval(updater); updater=null; }
+function refreshUI(){ const btn = document.getElementById('playPause'); let playing=false;
+  if(kind==='mp3') playing = audio && !audio.paused && !audio.ended && audio.currentTime>0;
+  else playing = yt && yt.getPlayerState && yt.getPlayerState()===YT.PlayerState.PLAYING;
+  btn.textContent = playing ? '⏸' : '▶';
+}
+
+/* play/pause UI binding */
+document.getElementById('playPause').onclick = ()=>{
+  if(currentIndex===null) return;
+  const running = (kind==='mp3' ? !audio.paused && !audio.ended : yt && yt.getPlayerState && yt.getPlayerState()===YT.PlayerState.PLAYING);
+  if(running){ pauseAll(); cdStop(); stopUpdater(); userPaused = true; }
+  else { resumeAll(); cdStart(); startUpdater(); userPaused = false; }
+  setTimeout(refreshUI,150);
+};
+
+/* ---------- init / events ---------- */
+document.getElementById('saveBtn').onclick = ()=>{ addTrack(document.getElementById('nameInput').value.trim(), document.getElementById('urlInput').value.trim()); document.getElementById('nameInput').value=''; document.getElementById('urlInput').value=''; };
+document.getElementById('testBtn').onclick = ()=>{ addTrack(document.getElementById('nameInput').value.trim(), document.getElementById('urlInput').value.trim()); const idx = load().length-1; playTrack(idx,false,true); document.getElementById('nameInput').value=''; document.getElementById('urlInput').value=''; };
+
+// NOTE: importDemo and exportBtn removed per request (no handlers)
+
+// search, nav
+document.getElementById('search').addEventListener('input', (e)=> renderList(e.target.value) );
+document.getElementById('btnList').addEventListener('click', ()=> switchToList() );
+document.getElementById('btnController').addEventListener('click', ()=> switchToController() );
+
+// safe vol handling (if a vol input exists elsewhere, don't throw)
+const volEl = document.getElementById('vol'); if(volEl){ volEl.addEventListener('input', e=>{ audio.volume=parseFloat(e.target.value||0.9); if(yt && yt.setVolume) yt.setVolume(Math.round(parseFloat(e.target.value||0.9)*100)); }); }
+
+audio.addEventListener('ended', ()=> nextTrack() );
+audio.addEventListener('timeupdate', ()=> { if(kind==='mp3') updateRing(); } );
+
+/* ---------- switch views ---------- */
+function switchToList(){ document.getElementById('viewList').classList.add('active'); document.getElementById('viewController').classList.remove('active'); document.getElementById('btnList').classList.add('active'); document.getElementById('btnController').classList.remove('active'); window.scrollTo({top:0,behavior:'smooth'}); }
+function switchToController(){ document.getElementById('viewController').classList.add('active'); document.getElementById('viewList').classList.remove('active'); document.getElementById('btnController').classList.add('active'); document.getElementById('btnList').classList.remove('active'); window.scrollTo({top:0,behavior:'smooth'}); }
+
+/* ---------- helpers ---------- */
+function showToastTimed(msg){ showToast(msg, 2200); }
+
+/* ---------- YT API ---------- */
+function onYouTubeIframeAPIReady(){ try{ createYT(); }catch(e){} }
+
+/* ---------- initial render ---------- */
+document.addEventListener('DOMContentLoaded', ()=>{ renderList(); document.getElementById('ctlTitle').textContent='No track selected'; });
+</script>
+</body>
+</html>
